@@ -1,0 +1,58 @@
+﻿@page "/"
+@inject RazorClassLibrary1.Blazorify blazorify
+
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<button class="btn btn-primary" @onclick="Toggle">Toggle</button>
+
+<CascadingValue Value="Theme">
+    <VInput Value="Value" Messages="messages">
+        <PrependOuterContent>
+            Prepend outer content
+        </PrependOuterContent>
+        <AppendOuterContent>
+            Append outer content
+        </AppendOuterContent>
+        <LabelContent>This is a label</LabelContent>
+        <InputContent>
+            asdfasdfasdfasdfasdf
+        </InputContent>
+    </VInput>
+    <VInput Value="Value" Label="This is also a label">
+        this is child content
+    </VInput>
+
+    <VCheckbox @bind-Value="Checked" Checked="true" Label="Is checked..." />
+    <VCheckbox @bind-Value="Checked" Checked="false" Label="Is not checked..." />
+
+    Checked @Checked
+</CascadingValue>
+
+<div>
+    Theme
+    @(System.Text.Json.JsonSerializer.Serialize(Theme, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true }))
+</div>
+<div>
+    blazorify
+    @(System.Text.Json.JsonSerializer.Serialize(blazorify, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true }))
+</div>
+
+@code {
+    public bool Checked { get; set; }
+    public string[] messages = new[] { "this a message" };
+    public string Value { get; set; }
+    public CascadingTheme Theme = new CascadingTheme();
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+        blazorify.WhenAnyValue(z => z.Theme.Dark)
+            .Subscribe(z => Theme.IsDark = z);
+    }
+    void Toggle()
+    {
+        blazorify.Theme.Dark = !blazorify.Theme.Dark;
+    }
+} 
